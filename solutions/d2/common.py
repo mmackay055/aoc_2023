@@ -34,22 +34,3 @@ def repair_map(color_map) -> dict[str, int]:
 def parse_color(color_raw) -> tuple[str, int]:
     elms = color_raw.split(' ')
     return (elms[1], int(elms[0]))
-
-
-def get_minimum_hand(hands):
-    blue = 0
-    green = 0
-    red = 0
-
-    for h in hands:
-        b = h['blue']
-        if b > blue:
-            blue = b
-        r = h['red']
-        if r > red:
-            red = r
-        g = h['green']
-        if g > green:
-            green = g
-
-    return {'blue': blue, 'red': red, 'green': green}

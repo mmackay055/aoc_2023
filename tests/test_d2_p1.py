@@ -24,3 +24,12 @@ class D2P1Test(TestRunner, TestCase):
         self.assertEqual(0, p1.process_line("Game 20: 3 blue, 4 red; 13 green, 13 red, 14 blue "))
         self.assertEqual(0, p1.process_line("Game 20: 3 blue, 4 red; 14 green, 12 red, 14 blue "))
         self.assertEqual(0, p1.process_line("Game 20: 3 blue, 4 red; 13 green, 12 red, 15 blue "))
+
+    def test_hand_is_possible(self):
+        self.assertTrue(p1.hand_is_possible({"blue": 3, "red": 4, "green": 0}, {"blue": 3, "red": 4, "green": 0}))
+        self.assertTrue(p1.hand_is_possible({"blue": 3, "red": 4, "green": 0}, {"blue": 4, "red": 4, "green": 0}))
+        self.assertTrue(p1.hand_is_possible({"blue": 3, "red": 4, "green": 0}, {"blue": 3, "red": 5, "green": 0}))
+        self.assertTrue(p1.hand_is_possible({"blue": 3, "red": 4, "green": 0}, {"blue": 3, "red": 4, "green": 1}))
+        self.assertFalse(p1.hand_is_possible({"blue": 4, "red": 4, "green": 0}, {"blue": 3, "red": 4, "green": 0}))
+        self.assertFalse(p1.hand_is_possible({"blue": 3, "red": 5, "green": 0}, {"blue": 3, "red": 4, "green": 0}))
+        self.assertFalse(p1.hand_is_possible({"blue": 3, "red": 4, "green": 1}, {"blue": 3, "red": 4, "green": 0}))

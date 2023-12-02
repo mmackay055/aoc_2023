@@ -10,11 +10,34 @@ def process_line(line) -> int:
     hands_raw = common.parse_game(game)
     hands = list(map(common.parse_hand, hands_raw))
 
-    for h in hands:
-        if not common.hand_is_possible(h, main_hand_limit):
-            return 0
+    min_hand = get_minimum_hand(hands)
 
-    return game_id
+    cube = 1
+
+    for v in min_hand.values():
+        cube *= v
+
+    return cube
+
+
+def get_minimum_hand(hands):
+    blue_min = 0
+    green_min = 0
+    red_min = 0
+
+    for h in hands:
+        blue_min = get_required_blocks(h, 'blue', blue_min)
+        red_min = get_required_blocks(h, 'red', red_min)
+        green_min = get_required_blocks(h, 'green', green_min)
+
+    return {'blue': blue_min, 'red': red_min, 'green': green_min}
+
+
+def get_required_blocks(hand, color, cur_min):
+    min = hand[color]
+    if min > cur_min:
+        return min
+    return cur_min
 
 
 def solve(file):

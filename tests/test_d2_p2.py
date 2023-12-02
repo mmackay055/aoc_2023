@@ -17,6 +17,5 @@ class D2P2Test(TestRunner, TestCase):
     def test_example(self):
         self.assert_solution_example()
 
-    def test_minimum(self):
-
-
+    def test_get_minimum_hand(self):
+        self.assertEqual({'blue': 3, 'red': 11, 'green': 21}, p2.get_minimum_hand([{'blue': 1, 'red': 11, 'green': 3}, {'blue': 3, 'red': 3, 'green': 21}]))
