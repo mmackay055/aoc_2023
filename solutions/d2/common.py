@@ -1,4 +1,3 @@
-# return single integer and remaining line
 def parse_game_id(line) -> tuple[int, str]:
 
     game_index = line.find(":")
@@ -8,13 +7,11 @@ def parse_game_id(line) -> tuple[int, str]:
     return (game_id, line[game_index + 1:].strip())
 
 
-# return game list of hands
 def parse_game(game) -> list[str]:
     games = game.split(";")
     return list(map(str.strip, games))
 
 
-# return dic of colors
 def parse_hand(hand_raw) -> dict[str, int]:
     color_raw_elms = list(map(str.strip, hand_raw.split(",")))
     color_elms = list(map(parse_color, color_raw_elms))

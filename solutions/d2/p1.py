@@ -2,14 +2,6 @@ import sys
 
 from solutions.d2 import common
 
-# need to parse out
-# 'Game x:' is the header
-#   - where x and be multiple digits
-
-# need to parse game
-#  - ',' separates color
-#  - ';' separates sets
-
 
 main_hand_limit = {"red": 12, "green": 13, "blue": 14}
 
@@ -24,7 +16,6 @@ def hand_color_in_limit(color, hand, hand_limit) -> bool:
     return hand_color <= hand_limit_color
 
 
-# return game id if it would have been possible 0 if not
 def process_line(line) -> int:
     (game_id, game) = common.parse_game_id(line)
     hands_raw = common.parse_game(game)

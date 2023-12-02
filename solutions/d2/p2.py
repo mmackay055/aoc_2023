@@ -4,7 +4,6 @@ from solutions.d2 import common
 main_hand_limit = {"red": 12, "green": 13, "blue": 14}
 
 
-# return game id if it would have been possible 0 if not
 def process_line(line) -> int:
     (game_id, game) = common.parse_game_id(line)
     hands_raw = common.parse_game(game)
