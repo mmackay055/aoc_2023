@@ -36,11 +36,20 @@ def parse_color(color_raw) -> tuple[str, int]:
     return (elms[1], int(elms[0]))
 
 
-def hand_is_possible(hand, hand_limit) -> bool:
-    return hand_color_in_limit('blue', hand, hand_limit) and hand_color_in_limit('red', hand, hand_limit) and hand_color_in_limit('green', hand, hand_limit)
+def get_minimum_hand(hands):
+    blue = 0
+    green = 0
+    red = 0
 
+    for h in hands:
+        b = h['blue']
+        if b > blue:
+            blue = b
+        r = h['red']
+        if r > red:
+            red = r
+        g = h['green']
+        if g > green:
+            green = g
 
-def hand_color_in_limit(color, hand, hand_limit) -> bool:
-    hand_color = hand[color]
-    hand_limit_color = hand_limit[color]
-    return hand_color <= hand_limit_color
+    return {'blue': blue, 'red': red, 'green': green}

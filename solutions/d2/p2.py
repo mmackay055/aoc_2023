@@ -1,27 +1,7 @@
 import sys
-
 from solutions.d2 import common
 
-# need to parse out
-# 'Game x:' is the header
-#   - where x and be multiple digits
-
-# need to parse game
-#  - ',' separates color
-#  - ';' separates sets
-
-
 main_hand_limit = {"red": 12, "green": 13, "blue": 14}
-
-
-def hand_is_possible(hand, hand_limit) -> bool:
-    return hand_color_in_limit('blue', hand, hand_limit) and hand_color_in_limit('red', hand, hand_limit) and hand_color_in_limit('green', hand, hand_limit)
-
-
-def hand_color_in_limit(color, hand, hand_limit) -> bool:
-    hand_color = hand[color]
-    hand_limit_color = hand_limit[color]
-    return hand_color <= hand_limit_color
 
 
 # return game id if it would have been possible 0 if not
@@ -31,7 +11,7 @@ def process_line(line) -> int:
     hands = list(map(common.parse_hand, hands_raw))
 
     for h in hands:
-        if not hand_is_possible(h, main_hand_limit):
+        if not common.hand_is_possible(h, main_hand_limit):
             return 0
 
     return game_id
