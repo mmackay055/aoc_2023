@@ -23,7 +23,7 @@ def calc_digit(word):
     return None
 
 
-def check_word(word):
+def starts_with(word):
     if 'one'.startswith(word):
         return word
     if 'two'.startswith(word):
@@ -45,42 +45,76 @@ def check_word(word):
     return None
 
 
+def ends_with(word):
+    if 'one'.endswith(word):
+        return word
+    if 'two'.endswith(word):
+        return word
+    if 'three'.endswith(word):
+        return word
+    if 'four'.endswith(word):
+        return word
+    if 'five'.endswith(word):
+        return word
+    if 'six'.endswith(word):
+        return word
+    if 'seven'.endswith(word):
+        return word
+    if 'eight'.endswith(word):
+        return word
+    if 'nine'.endswith(word):
+        return word
+    return None
+
+
+def process_line(line):
+    digs1 = find_forward(line)
+    digs2 = find_reverse(line)
+
+    return int(digs1 + digs2)
+
+
+def find_forward(line):
+    word = ''
+    for i in range(len(line)):
+        c = line[i]
+        if c.isdigit():
+            return c
+        word += c
+        check = starts_with(word)
+        if check is not None:
+            dig = calc_digit(check)
+            if dig is not None:
+                return dig
+        else:
+            while len(word) > 0 and starts_with(word) is None:
+                word = word[1:]
+
+
+def find_reverse(line):
+    word = ''
+    for i in range(len(line) - 1, -1, -1):
+        c = line[i]
+        if c.isdigit():
+            return c
+        word = c + word
+        check = ends_with(word)
+        if check is not None:
+            dig = calc_digit(check)
+            if dig is not None:
+                return dig
+        else:
+            while len(word) > 0 and ends_with(word) is None:
+                word = word[:-1]
+
+
 def solve(file):
 
     sum = 0
     with open(file) as f:
         for line in f:
-            line = line.rstrip()
-
-            dig_1 = None
-            dig_2 = None
-            word = ''
-            for c in line:
-                if c.isdigit():
-                    if dig_1 is None:
-                        dig_1 = c
-                        dig_2 = c
-                    else:
-                        dig_2 = c
-                    word = ''
-                else:
-                    word += c
-                    check = check_word(word)
-                    if check is not None:
-                        dig = calc_digit(check)
-                        if dig is not None:
-                            if dig_1 is None:
-                                dig_1 = dig
-                                dig_2 = dig
-                            else:
-                                dig_2 = dig
-                            word = ''
-                    else:
-                        word = word[1:]
-
-            cali_val = int(dig_1 + dig_2)
-            sum += cali_val
-
+            linez = line.rstrip()
+            sum += process_line(linez)
     return sum
 
 
