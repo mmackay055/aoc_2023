@@ -1,21 +1,44 @@
 import sys
+from typing import TypeAlias
+
+# TODO delete?
+# class Item:
+#    def __init__(self, symbol: bool, index_start: int, index_end: int):
+#        self.symbol = symbol
+#        self.index_start = index_start
+#        self.index_end = index_end
+
+Item: TypeAlias = tuple[bool, int, int]
 
 
 # if number found check previous
 # if symbol found check current line and previous
 # ensure duplicates are not added
-def process_line(line: str, prev_line: str, prev_items: list[tuple[bool, int, int]]) -> tuple[list[int], list[tuple[bool, int, int]]]:
+def process_line(line: str, prev_line: str, prev_items: list[Item]) -> tuple[list[int], list[Item]]:
     items = parse_items(line)
 
-    if prev_items is None:
-        return ([], items)
+    eng_nums = []
 
-    eng_nums = calc_eng_num(line, items, prev_line, prev_items)
+    eng_num_items = find_eng_num_same_line(items)
+    for en in eng_num_items:
+        eng_nums.append(to_eng_num(en, line))
+
+    if prev_items is None:
+        return (eng_nums, items)
+
+    eng_num_items = find_eng_num_diff_line(items, prev_items, len(line) - 1)
+    for en in eng_num_items:
+        eng_nums.append(to_eng_num(en, line))
+
+    eng_num_items = find_eng_num_diff_line(prev_items, items, len(line) - 1)
+    for en in eng_num_items:
+        eng_nums.append(to_eng_num(en, prev_line))
+
     return (eng_nums, items)
 
 
-def parse_items(line: str) -> list[tuple[bool, int, int]]:
-    items: list[tuple[bool, int, int]] = []
+def parse_items(line: str) -> list[Item]:
+    items: list[Item] = []
     n_start = -1
     n_end = -1
     for i in range(len(line)):
@@ -39,50 +62,77 @@ def parse_items(line: str) -> list[tuple[bool, int, int]]:
     return items
 
 
-def calc_eng_num(line: str, items: list[tuple[bool, int, int]], prev_line: str, prev_items: list[tuple[bool, int, int]]) -> list[int]:
-    nums: list[int] = []
+def to_eng_num(item: Item, line: str) -> int:
+    return int(line[item[1]:item[2] + 1])
 
-    for i in items:
-        if i[0]:
-            # symbol
-            pass
-        else:
-            # number
-            pass
+
+def find_eng_num_same_line(items: list[Item]) -> list[Item]:
+    nums: list[Item] = []
+
+    # check same line
+    for i in range(len(items)):
+        if not items[i][0]:
+            if i > 0 and (items[i - 1])[0] and is_engnum_same_line(items[i], items[i - 1]):
+                nums.append(items[i])
+            elif i < len(items) - 1 and items[i + 1][0] and is_engnum_same_line(items[i], items[i + 1]):
+                nums.append(items[i])
+
     return nums
 
 
-def is_adjacent(item: tuple[bool, int, int], other: tuple[bool, int, int], max_i) -> bool:
-    i_0 = item[1]
-    i_1 = item[2]
+def is_engnum_same_line(num: Item, symbol: Item) -> bool:
+    n_0 = num[1]
+    n_1 = num[2]
+    s_0 = symbol[1]
+    s_1 = symbol[2]
 
-    if other[1] > 0:
-        o_0 = other[1] - 1
+    return (n_0 - 1 == s_1) or (n_1 + 1 == s_0)
+
+
+def get_next(i: int, items: list[Item]) -> Item:
+    if i >= len(items):
+        return items[len(items) - 1]
+    return items[i]
+
+
+def find_eng_num_diff_line(items: list[Item], symbols: list[Item], max_i: int) -> list[Item]:
+    nums: list[Item] = []
+
+    # TODO save where left off in search
+    for item in items:
+        if not item[0]:
+            for symbol in symbols:
+                if symbol[0] and is_engnum_diff_line(item, symbol, max_i):
+                    nums.append(item)
+                    break
+
+    return nums
+
+
+def is_engnum_diff_line(num: Item, symbol: Item, max_i: int) -> bool:
+    n_0 = num[1]
+    n_1 = num[2]
+
+    if symbol[1] > 0:
+        s_0 = symbol[1] - 1
     else:
-        o_0 = other[1]
+        s_0 = symbol[1]
 
-    if other[2] < max_i:
-        o_1 = other[2] + 1
+    if symbol[2] < max_i:
+        s_1 = symbol[2] + 1
     else:
-        o_1 = other[2]
+        s_1 = symbol[2]
 
-
-
-def number_is_pn(start: int, end: int, line: str, prev_line: str):
-    pass
-
-
-def get_adjacent_symbols(symbol_loc: int, line: str, prev_line: str):
-    pass
+    return (n_0 >= s_0 and n_0 <= s_1) or (n_1 >= s_0 and n_1 <= s_1)
 
 
 def is_symbol(e: str):
-    return (not e.isalnum()) and e != "."
+    return (not e.isnumeric()) and e != "."
 
 
 def solve(file):
     sum = 0
-    index = {}
+    index = set()
     prev_items = None
     prev_line = None
     with open(file) as f:
@@ -93,7 +143,8 @@ def solve(file):
             for en in eng_nums:
                 index.add(en)
 
-    sum = sum(index)
+    for i in index:
+        sum += i
     return sum
 
 
