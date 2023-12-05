@@ -35,12 +35,12 @@ class D3CommonTest(TestCase):
         self.assertFalse(is_engnum_same_line(Item('123', 0, 1, 3), Item('*', 0, 5, 5)))
 
     def test_eng_num_same_lines(self):
-        self.assertEqual([Item('123', 0, 1, 3), Item('123', 0, 5, 7)], find_eng_num_same_line([Item('123', 0, 1, 3), Item('*', 0, 4, 4), Item('123', 0, 5, 7), Item('123', 0, 8, 9)]))
+        self.assertEqual([(Item('*', 0, 4, 4), Item('123', 0, 1, 3)), (Item('*', 0, 4, 4), Item('123', 0, 5, 7))], find_eng_num_same_line([Item('123', 0, 1, 3), Item('*', 0, 4, 4), Item('123', 0, 5, 7), Item('123', 0, 8, 9)]))
         self.assertEqual([], find_eng_num_same_line([Item('123', 0, 1, 1), Item('123', 0, 3, 4), Item('123', 0, 5, 7), Item('123', 0, 8, 9)]))
-        self.assertEqual([Item('123', 0, 4, 4)], find_eng_num_same_line([Item('123', 0, 1, 3), Item('123', 0, 4, 4), Item('*', 0, 5, 5), Item('123', 0, 8, 9)]))
-        self.assertEqual([Item('123', 0, 5, 7)], find_eng_num_same_line([Item('123', 0, 1, 3), Item('123', 0, 4, 4), Item('123', 0, 5, 7), Item('*', 0, 8, 9)]))
+        self.assertEqual([(Item('*', 0, 5, 5), Item('123', 0, 4, 4))], find_eng_num_same_line([Item('123', 0, 1, 3), Item('123', 0, 4, 4), Item('*', 0, 5, 5), Item('123', 0, 8, 9)]))
+        self.assertEqual([(Item('*', 0, 8, 9), Item('123', 0, 5, 7))], find_eng_num_same_line([Item('123', 0, 1, 3), Item('123', 0, 4, 4), Item('123', 0, 5, 7), Item('*', 0, 8, 9)]))
 
     def test_eng_num_diff_line(self):
-        self.assertEqual([Item('123', 0, 1, 3), Item('123', 0, 4, 5), Item('123', 0, 8, 8)],
+        self.assertEqual([(Item('*', 0, 4, 4), Item('123', 0, 1, 3)), (Item('*', 0, 4, 4), Item('123', 0, 4, 5)), (Item('*', 0, 8, 8), Item('123', 0, 8, 8))],
                          find_eng_num_diff_line([Item('123', 0, 1, 3), Item('123', 0, 4, 5), Item('123', 0, 6, 6), Item('123', 0, 8, 8)],
                                                 [Item('123', 0, 1, 1), Item('*', 0, 4, 4), Item('123', 0, 5, 5), Item('*', 0, 8, 8)], 9))

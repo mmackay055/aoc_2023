@@ -1,3 +1,6 @@
+from typing import TypeAlias
+
+
 class Item:
     def __init__(self, val: str, line_no: int, start: int, end: int):
         self.val = val
@@ -16,6 +19,9 @@ class Item:
 
     def __eq__(self, o):
         return self.val == o.val and self.line_no == o.line_no and self.start == o.start and self.end == o.end
+
+
+SymbolEngNumPair: TypeAlias = tuple[Item, Item]
 
 
 def is_symbol(e: str):
@@ -50,16 +56,16 @@ def parse_items(line: str, line_no: int) -> list[Item]:
     return items
 
 
-def find_eng_num_same_line(items: list[Item]) -> list[Item]:
-    nums: list[Item] = []
+def find_eng_num_same_line(items: list[Item]) -> list[SymbolEngNumPair]:
+    nums: list[SymbolEngNumPair] = []
 
     # check same line
     for i in range(len(items)):
         if not items[i].is_symbol():
             if i > 0 and items[i - 1].is_symbol() and is_engnum_same_line(items[i], items[i - 1]):
-                nums.append(items[i])
+                nums.append((items[i - 1], items[i]))
             elif i < (len(items) - 1) and items[i + 1].is_symbol() and is_engnum_same_line(items[i], items[i + 1]):
-                nums.append(items[i])
+                nums.append((items[i + 1], items[i]))
 
     return nums
 
@@ -68,15 +74,15 @@ def is_engnum_same_line(num: Item, symbol: Item) -> bool:
     return (num.start - 1 == symbol.end) or (num.end + 1 == symbol.start)
 
 
-def find_eng_num_diff_line(items: list[Item], symbols: list[Item], max_i: int) -> list[Item]:
-    nums: list[Item] = []
+def find_eng_num_diff_line(items: list[Item], symbols: list[Item], max_i: int) -> list[SymbolEngNumPair]:
+    nums: list[SymbolEngNumPair] = []
 
     # TODO save where left off in search
     for item in items:
         if not item.is_symbol():
             for symbol in symbols:
                 if symbol.is_symbol() and is_engnum_diff_line(item, symbol, max_i):
-                    nums.append(item)
+                    nums.append((symbol, item))
                     break
 
     return nums

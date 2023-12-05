@@ -17,19 +17,19 @@ def process_line(line: str, line_no: int, prev_line: str, prev_items: list[Item]
     eng_nums = []
 
     eng_num_items = common.find_eng_num_same_line(items)
-    for en in eng_num_items:
-        eng_nums.append(to_eng_item(en))
+    for pair in eng_num_items:
+        eng_nums.append(to_eng_item(pair[1]))
 
     if prev_items is None:
         return (eng_nums, items)
 
     eng_num_items = common.find_eng_num_diff_line(items, prev_items, len(line) - 1)
-    for en in eng_num_items:
-        eng_nums.append(to_eng_item(en))
+    for pair in eng_num_items:
+        eng_nums.append(to_eng_item(pair[1]))
 
     eng_num_items = common.find_eng_num_diff_line(prev_items, items, len(prev_line) - 1)
-    for en in eng_num_items:
-        eng_nums.append(to_eng_item(en))
+    for pair in eng_num_items:
+        eng_nums.append(to_eng_item(pair[1]))
 
     return (eng_nums, items)
 
