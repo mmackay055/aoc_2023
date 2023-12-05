@@ -8,33 +8,38 @@ from typing import TypeAlias
 #        self.index_start = index_start
 #        self.index_end = index_end
 
-Item: TypeAlias = tuple[bool, int, int]
+Item: TypeAlias = tuple[str, int, int]
+EngItem: TypeAlias = tuple[str, int]
 
 
 # if number found check previous
 # if symbol found check current line and previous
 # ensure duplicates are not added
-def process_line(line: str, prev_line: str, prev_items: list[Item]) -> tuple[list[int], list[Item]]:
+def process_line(line: str, line_no: int, prev_line: str, prev_items: list[Item]) -> tuple[list[EngItem], list[Item]]:
     items = parse_items(line)
 
     eng_nums = []
 
     eng_num_items = find_eng_num_same_line(items)
     for en in eng_num_items:
-        eng_nums.append(to_eng_num(en, line))
+        eng_nums.append(to_eng_item(en, line_no))
 
     if prev_items is None:
         return (eng_nums, items)
 
     eng_num_items = find_eng_num_diff_line(items, prev_items, len(line) - 1)
     for en in eng_num_items:
-        eng_nums.append(to_eng_num(en, line))
+        eng_nums.append(to_eng_item(en, line_no))
 
-    eng_num_items = find_eng_num_diff_line(prev_items, items, len(line) - 1)
+    eng_num_items = find_eng_num_diff_line(prev_items, items, len(prev_line) - 1)
     for en in eng_num_items:
-        eng_nums.append(to_eng_num(en, prev_line))
+        eng_nums.append(to_eng_item(en, line_no - 1))
 
     return (eng_nums, items)
+
+
+def to_eng_item(item: Item, line_no: int) -> EngItem:
+    return (f'{line_no}:{item[1]}:{item[2]}', to_eng_num(item))
 
 
 def parse_items(line: str) -> list[Item]:
@@ -46,27 +51,27 @@ def parse_items(line: str) -> list[Item]:
 
         if is_symbol(c):
             if n_start >= 0 and n_end >= 0:
-                items.append((False, n_start, n_end))
+                items.append((line[n_start: n_end + 1], n_start, n_end))
                 n_start = -1
                 n_end = -1
-            items.append((True, i, i))
+            items.append((None, i, i))
         elif c.isnumeric():
             if n_start < 0:
                 n_start = i
             n_end = i
         elif n_start >= 0 and n_end >= 0:
-            items.append((False, n_start, n_end))
+            items.append((line[n_start: n_end + 1], n_start, n_end))
             n_start = -1
             n_end = -1
 
     if n_start >= 0 and n_end >= 0:
-        items.append((False, n_start, n_end))
+        items.append((line[n_start: n_end + 1], n_start, n_end))
 
     return items
 
 
-def to_eng_num(item: Item, line: str) -> int:
-    return int(line[item[1]:item[2] + 1])
+def to_eng_num(item: Item) -> int:
+    return int(item[0])
 
 
 def find_eng_num_same_line(items: list[Item]) -> list[Item]:
@@ -74,13 +79,17 @@ def find_eng_num_same_line(items: list[Item]) -> list[Item]:
 
     # check same line
     for i in range(len(items)):
-        if not items[i][0]:
-            if i > 0 and (items[i - 1])[0] and is_engnum_same_line(items[i], items[i - 1]):
+        if not item_is_symbol(items[i]):
+            if i > 0 and item_is_symbol(items[i - 1]) and is_engnum_same_line(items[i], items[i - 1]):
                 nums.append(items[i])
-            elif i < len(items) - 1 and items[i + 1][0] and is_engnum_same_line(items[i], items[i + 1]):
+            elif i < (len(items) - 1) and item_is_symbol(items[i + 1]) and is_engnum_same_line(items[i], items[i + 1]):
                 nums.append(items[i])
 
     return nums
+
+
+def item_is_symbol(item: Item) -> bool:
+    return item[0] is None
 
 
 def is_engnum_same_line(num: Item, symbol: Item) -> bool:
@@ -103,9 +112,9 @@ def find_eng_num_diff_line(items: list[Item], symbols: list[Item], max_i: int) -
 
     # TODO save where left off in search
     for item in items:
-        if not item[0]:
+        if not item_is_symbol(item):
             for symbol in symbols:
-                if symbol[0] and is_engnum_diff_line(item, symbol, max_i):
+                if item_is_symbol(symbol) and is_engnum_diff_line(item, symbol, max_i):
                     nums.append(item)
                     break
 
@@ -135,19 +144,23 @@ def is_symbol(e: str):
 
 def solve(file):
     sum = 0
-    index = set()
+    index = {}
     prev_items = None
     prev_line = None
+    line_no = 0
     with open(file) as f:
         for line in f:
             line = line.rstrip()
-            (eng_nums, prev_items) = process_line(line, prev_line, prev_items)
+            (eng_items, prev_items) = process_line(line, line_no, prev_line, prev_items)
             prev_line = line
-            for en in eng_nums:
-                index.add(en)
+            line_no += 1
+            for ei in eng_items:
+                if ei[0] in index and index[ei[0]] != ei[1]:
+                    raise Exception('duplicate entry with differing value')
+                index[ei[0]] = ei[1]
 
-    for i in index:
-        sum += i
+    for val in index.values():
+        sum += val
     return sum
 
 
