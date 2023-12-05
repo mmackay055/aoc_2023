@@ -1,12 +1,3 @@
-def parse_game_id(line) -> tuple[int, str]:
-
-    game_index = line.find(":")
-    game_elm = line[:game_index]
-    game_id = int(game_elm.split(' ')[1])
-
-    return (game_id, line[game_index + 1:].strip())
-
-
 def parse_game(game) -> list[str]:
     games = game.split(";")
     return list(map(str.strip, games))

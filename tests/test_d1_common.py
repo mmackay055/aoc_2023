@@ -3,9 +3,6 @@ from solutions.d2 import common
 
 
 class D2CommonTest(TestCase):
-    def test_parse_game_id(self):
-        self.assertEqual((1, "3 blue, 4 red; 6 green, 7 blue"), common.parse_game_id("Game 1: 3 blue, 4 red; 6 green, 7 blue "))
-
     def test_parse_game(self):
         self.assertEqual(["3 blue, 4 red", "10 blue, 11 green, 5 red", "6 green, 7 blue"], common.parse_game("3 blue, 4 red; 10 blue, 11 green, 5 red; 6 green, 7 blue"))
 

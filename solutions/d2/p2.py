@@ -1,11 +1,12 @@
 import sys
 from solutions.d2 import common
+from solutions.common import parse_line_id
 
 main_hand_limit = {"red": 12, "green": 13, "blue": 14}
 
 
 def process_line(line) -> int:
-    (game_id, game) = common.parse_game_id(line)
+    (game_id, game) = parse_line_id(line)
     hands_raw = common.parse_game(game)
     hands = list(map(common.parse_hand, hands_raw))
 
