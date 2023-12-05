@@ -12,33 +12,33 @@ EngItem: TypeAlias = tuple[str, int]
 
 
 def process_line(line: str, line_no: int, prev_line: str, prev_items: list[Item]) -> tuple[list[EngItem], list[Item]]:
-    items = parse_items(line)
+    items = parse_items(line, line_no)
 
     eng_nums = []
 
     eng_num_items = find_eng_num_same_line(items)
     for en in eng_num_items:
-        eng_nums.append(to_eng_item(en, line_no))
+        eng_nums.append(to_eng_item(en))
 
     if prev_items is None:
         return (eng_nums, items)
 
     eng_num_items = find_eng_num_diff_line(items, prev_items, len(line) - 1)
     for en in eng_num_items:
-        eng_nums.append(to_eng_item(en, line_no))
+        eng_nums.append(to_eng_item(en))
 
     eng_num_items = find_eng_num_diff_line(prev_items, items, len(prev_line) - 1)
     for en in eng_num_items:
-        eng_nums.append(to_eng_item(en, line_no - 1))
+        eng_nums.append(to_eng_item(en))
 
     return (eng_nums, items)
 
 
-def to_eng_item(item: Item, line_no: int) -> EngItem:
-    return (f'{item.to_address(line_no)}', to_eng_num(item))
+def to_eng_item(item: Item) -> EngItem:
+    return (f'{item.to_address()}', to_eng_num(item))
 
 
-def parse_items(line: str) -> list[Item]:
+def parse_items(line: str, line_no: int) -> list[Item]:
     items: list[Item] = []
     n_start = -1
     n_end = -1
@@ -47,21 +47,21 @@ def parse_items(line: str) -> list[Item]:
 
         if common.is_symbol(c):
             if n_start >= 0 and n_end >= 0:
-                items.append(Item(line[n_start: n_end + 1], n_start, n_end))
+                items.append(Item(line[n_start: n_end + 1], line_no, n_start, n_end))
                 n_start = -1
                 n_end = -1
-            items.append(Item(line[i: i + 1], i, i))
+            items.append(Item(line[i: i + 1], line_no, i, i))
         elif c.isnumeric():
             if n_start < 0:
                 n_start = i
             n_end = i
         elif n_start >= 0 and n_end >= 0:
-            items.append(Item(line[n_start: n_end + 1], n_start, n_end))
+            items.append(Item(line[n_start: n_end + 1], line_no, n_start, n_end))
             n_start = -1
             n_end = -1
 
     if n_start >= 0 and n_end >= 0:
-        items.append(Item(line[n_start: n_end + 1], n_start, n_end))
+        items.append(Item(line[n_start: n_end + 1], line_no, n_start, n_end))
 
     return items
 
