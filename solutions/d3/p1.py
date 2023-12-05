@@ -45,7 +45,7 @@ def parse_items(line: str) -> list[Item]:
         c = line[i]
 
         if is_symbol(c):
-            if n_start > 0 and n_end > 0:
+            if n_start >= 0 and n_end >= 0:
                 items.append((False, n_start, n_end))
                 n_start = -1
                 n_end = -1
@@ -58,6 +58,9 @@ def parse_items(line: str) -> list[Item]:
             items.append((False, n_start, n_end))
             n_start = -1
             n_end = -1
+
+    if n_start >= 0 and n_end >= 0:
+        items.append((False, n_start, n_end))
 
     return items
 
