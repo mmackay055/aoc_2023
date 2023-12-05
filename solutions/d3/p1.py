@@ -1,20 +1,16 @@
 import sys
 from typing import TypeAlias
+from solutions.d3 import common
+from solutions.d3.common import Item
 
-# TODO delete?
-# class Item:
-#    def __init__(self, symbol: bool, index_start: int, index_end: int):
-#        self.symbol = symbol
-#        self.index_start = index_start
-#        self.index_end = index_end
 
-Item: TypeAlias = tuple[str, int, int]
+def to_eng_num(item: Item) -> int:
+    return int(item.val)
+
+
 EngItem: TypeAlias = tuple[str, int]
 
 
-# if number found check previous
-# if symbol found check current line and previous
-# ensure duplicates are not added
 def process_line(line: str, line_no: int, prev_line: str, prev_items: list[Item]) -> tuple[list[EngItem], list[Item]]:
     items = parse_items(line)
 
@@ -39,7 +35,7 @@ def process_line(line: str, line_no: int, prev_line: str, prev_items: list[Item]
 
 
 def to_eng_item(item: Item, line_no: int) -> EngItem:
-    return (f'{line_no}:{item[1]}:{item[2]}', to_eng_num(item))
+    return (f'{item.to_address(line_no)}', to_eng_num(item))
 
 
 def parse_items(line: str) -> list[Item]:
@@ -49,29 +45,25 @@ def parse_items(line: str) -> list[Item]:
     for i in range(len(line)):
         c = line[i]
 
-        if is_symbol(c):
+        if common.is_symbol(c):
             if n_start >= 0 and n_end >= 0:
-                items.append((line[n_start: n_end + 1], n_start, n_end))
+                items.append(Item(line[n_start: n_end + 1], n_start, n_end))
                 n_start = -1
                 n_end = -1
-            items.append((None, i, i))
+            items.append(Item(line[i: i + 1], i, i))
         elif c.isnumeric():
             if n_start < 0:
                 n_start = i
             n_end = i
         elif n_start >= 0 and n_end >= 0:
-            items.append((line[n_start: n_end + 1], n_start, n_end))
+            items.append(Item(line[n_start: n_end + 1], n_start, n_end))
             n_start = -1
             n_end = -1
 
     if n_start >= 0 and n_end >= 0:
-        items.append((line[n_start: n_end + 1], n_start, n_end))
+        items.append(Item(line[n_start: n_end + 1], n_start, n_end))
 
     return items
-
-
-def to_eng_num(item: Item) -> int:
-    return int(item[0])
 
 
 def find_eng_num_same_line(items: list[Item]) -> list[Item]:
@@ -79,26 +71,17 @@ def find_eng_num_same_line(items: list[Item]) -> list[Item]:
 
     # check same line
     for i in range(len(items)):
-        if not item_is_symbol(items[i]):
-            if i > 0 and item_is_symbol(items[i - 1]) and is_engnum_same_line(items[i], items[i - 1]):
+        if not items[i].is_symbol():
+            if i > 0 and items[i - 1].is_symbol() and is_engnum_same_line(items[i], items[i - 1]):
                 nums.append(items[i])
-            elif i < (len(items) - 1) and item_is_symbol(items[i + 1]) and is_engnum_same_line(items[i], items[i + 1]):
+            elif i < (len(items) - 1) and items[i + 1].is_symbol() and is_engnum_same_line(items[i], items[i + 1]):
                 nums.append(items[i])
 
     return nums
 
 
-def item_is_symbol(item: Item) -> bool:
-    return item[0] is None
-
-
 def is_engnum_same_line(num: Item, symbol: Item) -> bool:
-    n_0 = num[1]
-    n_1 = num[2]
-    s_0 = symbol[1]
-    s_1 = symbol[2]
-
-    return (n_0 - 1 == s_1) or (n_1 + 1 == s_0)
+    return (num.start - 1 == symbol.end) or (num.end + 1 == symbol.start)
 
 
 def get_next(i: int, items: list[Item]) -> Item:
@@ -112,34 +95,30 @@ def find_eng_num_diff_line(items: list[Item], symbols: list[Item], max_i: int) -
 
     # TODO save where left off in search
     for item in items:
-        if not item_is_symbol(item):
+        if not item.is_symbol():
             for symbol in symbols:
-                if item_is_symbol(symbol) and is_engnum_diff_line(item, symbol, max_i):
+                if symbol.is_symbol() and is_engnum_diff_line(item, symbol, max_i):
                     nums.append(item)
                     break
 
     return nums
 
 
-def is_engnum_diff_line(num: Item, symbol: Item, max_i: int) -> bool:
-    n_0 = num[1]
-    n_1 = num[2]
+def is_engnum_diff_line(num: Item, sym: Item, max_i: int) -> bool:
+    n_0 = num.start
+    n_1 = num.end
 
-    if symbol[1] > 0:
-        s_0 = symbol[1] - 1
+    if sym.start > 0:
+        s_0 = sym.start - 1
     else:
-        s_0 = symbol[1]
+        s_0 = sym.start
 
-    if symbol[2] < max_i:
-        s_1 = symbol[2] + 1
+    if sym.end < max_i:
+        s_1 = sym.end + 1
     else:
-        s_1 = symbol[2]
+        s_1 = sym.end
 
     return (n_0 >= s_0 and n_0 <= s_1) or (n_1 >= s_0 and n_1 <= s_1)
-
-
-def is_symbol(e: str):
-    return (not e.isnumeric()) and e != "."
 
 
 def solve(file):
