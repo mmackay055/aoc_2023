@@ -7,12 +7,26 @@ class Map:
         self.output_start = output_start
         self.span = span
 
-    def output(self, intput: int) -> int:
-        return -1
+    def output(self, val: int) -> int:
+        if val < self.input_start or val > self.input_start + self.span - 1:
+            return -1
+
+        return val - self.input_start + self.output_start
+
+    def __repr__(self):
+        return f'Map(input_start={self.input_start}, output_start={self.output_start}, span={self.span})'
+
+    def __eq__(self, o):
+        return self.input_start == o.input_start and \
+            self.output_start == o.output_start and \
+            self.span == o.span
 
 
 def build_map(line: str) -> Map:
-    pass
+    elms = list(filter(None, line.split(' ')))
+    assert len(elms), 3
+
+    return Map(int(elms[1]), int(elms[0]), int(elms[2]))
 
 
 class Mapper:
@@ -21,13 +35,24 @@ class Mapper:
         self.maps: list[Map] = []
 
     def add(self, map: Map):
-        # sort
-
+        # TODO sort
+        self.maps.append(map)
         return self
 
+    def output(self, val: int) -> int:
+        for m in self.maps:
+            # TODO improve
+            out = m.output(val)
+            if out != -1:
+                return out
+        return val
 
-    def output(self, intput: int) -> int:
-        return -1
+
+def build_mapper(line: str) -> Mapper:
+    elms = list(filter(None, line.split(' ')))
+    assert len(elms), 2
+
+    return Mapper(elms[0])
 
 
 class Almanac:
@@ -39,21 +64,50 @@ class Almanac:
         return self
 
     def calc_location(self, seed: int) -> int:
-        return -1
+        for m in self.mappers:
+            seed = m.output(seed)
+        return seed
 
 
-def process_line(line):
-    pass
+class AlmanacDataParser:
+    def __init__(self):
+        self.almanac = Almanac()
+        self.seeds = None
+        self.mapper = None
+
+    def process_line(self, line):
+        if self.seeds is None:
+            self.seeds = list(map(int, filter(None, line.split(' ')[1:])))
+            return
+
+        if len(line) > 0:
+            if self.mapper is None:
+                self.mapper = build_mapper(line)
+                self.almanac.add(self.mapper)
+            else:
+                self.mapper.add(build_map(line))
+        else:
+            self.mapper = None
+
+    def build(self) -> tuple[Almanac, list[str]]:
+        almanac = self.almanac
+        seeds = self.seeds
+        self.almanac = None
+        self.mapper = None
+        self.seeds = None
+        return (almanac, seeds)
 
 
 def solve(file):
-    sum = 0
+    builder = AlmanacDataParser()
     with open(file) as f:
         for line in f:
             line = line.rstrip()
-            val = process_line(line)
-            sum += val
-    return sum
+            builder.process_line(line)
+
+    (almanac, seeds) = builder.build()
+    locations = [almanac.calc_location(seed) for seed in seeds]
+    return min(locations)
 
 
 if __name__ == '__main__':
