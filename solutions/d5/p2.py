@@ -31,11 +31,13 @@ def solve(file):
 
     almanac = builder.build()
 
-    locations = []
+    min = -1
     for sr in seeds:
         for s in range(sr[0], sr[1]):
-            locations.append(almanac.calc_location(s))
-    return min(locations)
+            loc = almanac.calc_location(s)
+            if min < 0 or loc < min:
+                min = loc
+    return min
 
 
 if __name__ == '__main__':

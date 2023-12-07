@@ -38,7 +38,8 @@ class Mapper:
 
     def output(self, val: int) -> int:
         for m in self.maps:
-            # TODO improve
+            if val < m.input_start:
+                return val
             out = m.output(val)
             if out != -1:
                 return out
