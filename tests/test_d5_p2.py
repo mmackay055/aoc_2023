@@ -16,3 +16,6 @@ class D5P2Test(TestRunner, TestCase):
 
     def test_example(self):
         self.assert_solution_example()
+
+    def test_parse_seeds(self):
+        self.assertEqual([(79, 93), (55, 68)], p2.parse_seeds("seeds: 79 14 55 13"))

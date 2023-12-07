@@ -32,8 +32,8 @@ class Mapper:
         self.maps: list[Map] = []
 
     def add(self, map: Map):
-        # TODO sort
         self.maps.append(map)
+        self.maps.sort(key=lambda m: m.input_start)
         return self
 
     def output(self, val: int) -> int:
