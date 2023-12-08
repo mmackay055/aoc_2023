@@ -20,19 +20,19 @@ def parse_seeds(line):
 
 def solve(file):
     builder = AlmanacDataParser()
-    seeds = None
+    seed_ranges = None
     with open(file) as f:
         for line in f:
             line = line.rstrip()
-            if seeds is None:
-                seeds = parse_seeds(line)
+            if seed_ranges is None:
+                seed_ranges = parse_seeds(line)
             else:
                 builder.process_line(line)
 
     almanac = builder.build()
 
     min = -1
-    for sr in seeds:
+    for sr in seed_ranges:
         for s in range(sr[0], sr[1]):
             loc = almanac.calc_location(s)
             if min < 0 or loc < min:

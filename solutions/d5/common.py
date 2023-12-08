@@ -1,14 +1,19 @@
 class Map:
-    def __init__(self, input_start, output_start, span):
+    def __init__(self, input_start: int, output_start: int, span: int):
         self.input_start = input_start
         self.output_start = output_start
         self.span = span
 
-    def output(self, val: int) -> int:
-        if val < self.input_start or val > self.input_start + self.span - 1:
-            return -1
+    def output(self, val: tuple[int, int]) -> tuple[int, int]:
+        val_0 = val[0]
+        val_1 = val[1]
 
-        return val - self.input_start + self.output_start
+        if val_0 < self.input_start or self.input_start > val_1:
+            (-1, -1)
+
+        out = val_0 - self.input_start + self.output_start
+
+        return (out, out + self.span - 1)
 
     def __repr__(self):
         return f'Map(input_start={self.input_start}, output_start={self.output_start}, span={self.span})'
@@ -82,7 +87,7 @@ class AlmanacDataParser:
         else:
             self.mapper = None
 
-    def build(self) -> tuple[Almanac, list[str]]:
+    def build(self) -> Almanac:
         almanac = self.almanac
         self.almanac = None
         self.mapper = None

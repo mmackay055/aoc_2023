@@ -11,9 +11,8 @@ class D5CommonTest(TestCase):
         self.assertEqual(common.Map(9, 5, 2), common.build_map('5 9 2 '))
 
     def test_map_output(self):
-        map = common.Map(98, 50, 2)
-        self.assertEqual(50, map.output(98))
-        self.assertEqual(51, map.output(99))
+        map = common.Map(98, 50, 10)
+        self.assertEqual(50, map.output([50, 60]))
 
     def test_almanac_build(self):
         builder = common.AlmanacDataParser()
