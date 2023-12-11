@@ -11,9 +11,15 @@ class Map:
         if val_0 < self.input_start or self.input_start > val_1:
             (-1, -1)
 
-        out = val_0 - self.input_start + self.output_start
+        out_0 = val_0 - self.input_start + self.output_start
+        if out_0 < self.output_start:
+            out_0 = self.output_start
 
-        return (out, out + self.span - 1)
+        out_1 = val_1 - self.input_start + self.output_start
+        if out_1 > self.output_start + self.span:
+            out_1 = self.output_start + self.span
+
+        return (out_0, out_1)
 
     def __repr__(self):
         return f'Map(input_start={self.input_start}, output_start={self.output_start}, span={self.span})'
@@ -41,8 +47,9 @@ class Mapper:
         self.maps.sort(key=lambda m: m.input_start)
         return self
 
-    def output(self, val: int) -> int:
+    def output(self, val: tuple[int, int]) -> tuple[int, int]:
         for m in self.maps:
+            # TODO check range here
             if val < m.input_start:
                 return val
             out = m.output(val)
@@ -66,6 +73,7 @@ class Almanac:
         self.mappers.append(mapper)
         return self
 
+    # TODO convert to range
     def calc_location(self, seed: int) -> int:
         for m in self.mappers:
             seed = m.output(seed)
