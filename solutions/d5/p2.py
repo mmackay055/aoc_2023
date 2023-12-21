@@ -33,10 +33,9 @@ def solve(file):
 
     min = -1
     for sr in seed_ranges:
-        for s in range(sr[0], sr[1]):
-            loc = almanac.calc_location(s)
-            if min < 0 or loc < min:
-                min = loc
+        loc = almanac.calc_location(sr)
+        if min < 0 or loc[0][0] < min:
+            min = loc[0][0]
     return min
 
 
