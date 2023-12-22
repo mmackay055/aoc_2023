@@ -20,8 +20,8 @@ def solve(file):
                 distance = parse_line(line)
             else:
                 raise Exception(f'unexpected line: {line}')
-    wins = len(common.calc_wins(time, distance))
-    return wins
+    r = common.calc_win_range(time, distance)
+    return common.calc_range_len(r)
 
 
 if __name__ == '__main__':

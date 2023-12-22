@@ -25,10 +25,12 @@ def solve(file):
     assert len(times) == len(distances)
 
     for i in range(len(times)):
+        r = common.calc_range_len(
+            common.calc_win_range(times[i], distances[i]))
         if result == 0:
-            result = len(common.calc_wins(times[i], distances[i]))
+            result = r
         else:
-            result *= len(common.calc_wins(times[i], distances[i]))
+            result *= r
 
     return result
 
