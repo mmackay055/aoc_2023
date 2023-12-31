@@ -9,7 +9,7 @@ def solve(file):
         for line in f:
             line = line.rstrip()
             if seeds is None:
-                seeds = list(map(int, filter(None, line.split(' ')[1:])))
+                seeds = list(map(int, line.split()[1:]))
             else:
                 builder.process_line(line)
 

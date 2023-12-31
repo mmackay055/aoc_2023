@@ -31,7 +31,7 @@ class Map:
 
 
 def build_map(line: str) -> Map:
-    elms = list(filter(None, line.split(' ')))
+    elms = line.split()
     assert len(elms), 3
 
     return Map(int(elms[1]), int(elms[0]), int(elms[2]))
@@ -78,7 +78,7 @@ class Mapper:
 
 
 def build_mapper(line: str) -> Mapper:
-    elms = list(filter(None, line.split(' ')))
+    elms = line.split()
     assert len(elms), 2
 
     return Mapper(elms[0])

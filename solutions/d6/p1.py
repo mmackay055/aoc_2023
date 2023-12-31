@@ -4,7 +4,7 @@ from solutions.d6 import common
 
 def parse_line(line):
     vals = line.split(":")[1].strip()
-    nums = list(map(int, filter(None, vals.split(" "))))
+    nums = list(map(int, vals.split()))
     return nums
 
 

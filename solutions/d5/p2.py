@@ -6,7 +6,7 @@ def parse_seeds(line):
     start = -1
 
     seed_ranges = []
-    seeds = list(map(int, filter(None, line.split(' ')[1:])))
+    seeds = list(map(int, line.split()[1:]))
 
     for s in seeds:
         if start < 0:

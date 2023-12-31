@@ -5,8 +5,7 @@ def parse_card(line) -> tuple[list[int], list[int]]:
 
 
 def parse_card_list(card_list: str) -> list[int]:
-    items = filter(None, card_list.split(' '))
-    return list(map(int, items))
+    return list(map(int, card_list.split()))
 
 
 def get_match_count(card_list0: list[int], card_list1: list[int]) -> int:

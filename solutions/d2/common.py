@@ -20,5 +20,5 @@ def repair_map(color_map) -> dict[str, int]:
 
 
 def parse_color(color_raw) -> tuple[str, int]:
-    elms = color_raw.split(' ')
+    elms = color_raw.split()
     return (elms[1], int(elms[0]))
